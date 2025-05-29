@@ -4,7 +4,7 @@
 
 Welcome to the **Code Review Challenge from Hell**! 😈
 
-Your mission, should you choose to accept it, is to review the TypeScript file `scratch_32.ts` and identify as many issues as possible. This file contains a carefully crafted collection of anti-patterns, security vulnerabilities, code smells, and style violations that would make any senior developer weep.
+Your mission, should you choose to accept it, is to review the TypeScript file `ohnocode.ts` and identify as many issues as possible. This file contains a carefully crafted collection of anti-patterns, security vulnerabilities, code smells, and style violations that would make any senior developer weep.
 
 ## 🚨 **WARNING: Viewer Discretion Advised**
 
@@ -25,7 +25,7 @@ The code you're about to review contains:
 Go through the code and **comment on or mark every issue you can find**. Look for problems in these categories:
 
 ### 🔧 **TypeScript & Code Quality Issues**
-- Type assertion abuse (`as` keyword overuse)
+- Type assertion abuse and anti-patterns
 - Missing or incorrect type definitions
 - Unused imports and variables
 - Poor naming conventions
@@ -62,25 +62,16 @@ Go through the code and **comment on or mark every issue you can find**. Look fo
 
 ### Example Comment Format:
 ```typescript
-// 🚨 CRITICAL SECURITY: SQL Injection vulnerability - user input directly interpolated
-// 🔧 TYPESCRIPT: Unnecessary type assertion - TypeScript can infer this type
-// 📐 STYLE: violates naming convention - should be camelCase
-// 🏗️ ARCHITECTURE: Function has too many responsibilities
+//CRITICAL SECURITY: SQL Injection vulnerability - user input directly interpolated
+// TYPESCRIPT: Unnecessary type assertion - TypeScript can infer this type
+// STYLE: violates naming convention - should be camelCase
+//  ARCHITECTURE: Function has too many responsibilities
 ```
 
 ## 🏆 **Scoring**
 
-**Points are awarded for:**
-- **Security Issues Found**: 10 points each (Critical vulnerabilities)
-- **TypeScript Issues**: 5 points each
-- **Style Violations**: 2 points each
-- **Logic Errors**: 3 points each
-- **Bonus Points**: For creative fixes or catching particularly subtle issues
 
-**Extra Credit:**
-- Identify the most creative misuse of TypeScript features
-- Find the most ridiculous type assertion
-- Spot the security vulnerability with the highest potential impact
+
 
 ## 🎨 **Eye Bleach Section**
 
