@@ -5,17 +5,17 @@ import { CardResponse, searchCards } from '../api/api';
 import Card from './Card';
 
 type CardListProps = {
-  hp: string;
+  cost: string;
 };
 
-export default function CardList({ hp }: CardListProps) {
+export default function CardList({ cost }: CardListProps) {
   const [cards, setCards] = useState<CardResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<'Name' | 'Set' | 'Cost' | 'Power'>('Name');
 
   useEffect(() => {
-    if (!hp) {
+    if (!cost) {
       setCards([]);
       return;
     }
@@ -24,7 +24,7 @@ export default function CardList({ hp }: CardListProps) {
       setLoading(true);
       setError(null);
       try {
-        const response = await searchCards(hp);
+        const response = await searchCards(cost);
 
         // Debug logging
         console.log('Card Search Response:', response);
@@ -34,7 +34,16 @@ export default function CardList({ hp }: CardListProps) {
         // Ensure we have an array
         const cardArray = Array.isArray(response.data) ? response.data : [];
         setCards(cardArray);
+
+        // Display error if provided in the API response
+        if (response.error) {
+          console.warn('API returned an error:', response.error);
+          setError(`API notice: ${response.error}`);
+        } else {
+          setError(null);
+        }
       } catch (err) {
+        console.error('Error fetching cards:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch cards');
         setCards([]); // Ensure cards is always an array
       } finally {
@@ -43,7 +52,7 @@ export default function CardList({ hp }: CardListProps) {
     };
 
     fetchCards();
-  }, [hp]);
+  }, [cost]);
 
   // Ensure cards is always an array before sorting
   const safeCards = Array.isArray(cards) ? cards : [];
@@ -62,7 +71,10 @@ export default function CardList({ hp }: CardListProps) {
     );
   }
 
-  if (error) {
+  // If we have both an error and cards (mock data), show both
+  const showError = error && (sortedCards.length > 0 || (error.startsWith && error.startsWith('API notice:')));
+
+  if (error && sortedCards.length === 0) {
     return (
         <View style={styles.centered}>
           <Text style={styles.errorText}>Error: {error}</Text>
@@ -70,10 +82,10 @@ export default function CardList({ hp }: CardListProps) {
     );
   }
 
-  if (sortedCards.length === 0 && hp) {
+  if (sortedCards.length === 0 && cost) {
     return (
         <View style={styles.centered}>
-          <Text style={styles.emptyText}>No cards found for HP: {hp}</Text>
+          <Text style={styles.emptyText}>No cards found for cost: {cost}</Text>
         </View>
     );
   }
@@ -81,13 +93,20 @@ export default function CardList({ hp }: CardListProps) {
   if (sortedCards.length === 0) {
     return (
         <View style={styles.centered}>
-          <Text style={styles.emptyText}>Select HP to see cards</Text>
+          <Text style={styles.emptyText}>Select cost to see cards</Text>
         </View>
     );
   }
 
   return (
       <View style={styles.container}>
+        {error && sortedCards.length > 0 && (
+          <View style={styles.errorBanner}>
+            <Text style={styles.errorText}>{error}</Text>
+            <Text style={styles.errorSubtext}>Showing fallback card data</Text>
+          </View>
+        )}
+
         <View style={styles.sortButtons}>
           <Text style={styles.sortLabel}>Sort by:</Text>
           <View style={styles.buttonGroup}>
@@ -148,6 +167,20 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#EF4444',
     fontSize: 16,
+  },
+  errorBanner: {
+    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    padding: 12,
+    marginHorizontal: 8,
+    marginTop: 8,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#EF4444',
+  },
+  errorSubtext: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    marginTop: 4,
   },
   emptyText: {
     color: '#9CA3AF',

@@ -1,62 +1,93 @@
-# Welcome to your Expo app 👋
-# Sports Card Investor Mobile App
-# Sports Card Investor Mobile App
+# Star Wars Unlimited Card Database App
 
-This is a React Native mobile app for Sports Card Investor, built with Expo and Bun.
+A React Native mobile application built with Expo and Bun for browsing Star Wars Unlimited cards. This project features seamless API integration with SWUDB.com for up-to-date card information.
 
 ## Features
 
-- Browse and filter cards based on health points (HP)
-- Sort cards by name, set, cost, or power
-- View detailed card information with images
+- Browse and search Star Wars Unlimited cards by cost
+- View detailed card information including images, stats, and text
+- Mobile-friendly interface with modern React Native components
+- Seamless CORS proxy integration for API requests
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (v16 or newer)
-- Bun or npm
-- Expo CLI (`npm install -g expo-cli`)
+- Node.js 18+ or [Bun](https://bun.sh/) (recommended)
+- Expo CLI
 
 ### Installation
 
 1. Clone the repository
-   ```
-   git clone https://github.com/your-username/sports-card-investor.git
-   cd sports-card-investor
+   ```bash
+   git clone https://github.com/your-username/swu-card-app.git
+   cd swu-card-app
    ```
 
 2. Install dependencies
-   ```
+   ```bash
+   # Using Bun (recommended)
    bun install
-   # or
+
+   # Or using npm
    npm install
    ```
 
 3. Start the development server
-   ```
+   ```bash
+   # Using Bun
    bun start
-   # or
+
+   # Or using npm
    npm start
    ```
 
 4. Open the app on your device using Expo Go or run on a simulator/emulator
 
+### Running the App
+
+After starting the development server, you have several options:
+
+- Scan the QR code with the Expo Go app on your physical device
+- Press `a` to open on an Android emulator
+- Press `i` to open on an iOS simulator
+- Press `w` to open in a web browser
+
+### Development Commands
+
+```bash
+# Start the development server
+bun start
+
+# Start on specific platform
+bun run android
+bun run ios
+bun run web
+
+# Lint the codebase
+bun run lint
+
+# Reset project to clean slate
+bun run reset-project
+```
+
 ## Project Structure
 
-- `app/` - Main application screens and navigation
+- `app/` - Main application screens and navigation (Expo Router)
 - `components/` - Reusable UI components
-- `api/` - API client and types
-- `constants/` - App-wide constants
+- `api/` - API client for SWUDB integration and type definitions
+- `constants/` - App-wide constants and configuration
 - `hooks/` - Custom React hooks
-- `assets/` - Static assets
+- `assets/` - Static assets including images and fonts
 
 ## Technologies Used
 
-- React Native
-- Expo
-- TypeScript
-- React Navigation
+- [React Native](https://reactnative.dev/) (v0.79.2) - Mobile application framework
+- [Expo](https://expo.dev/) (v53.0.9) - React Native development platform
+- [Bun](https://bun.sh/) - JavaScript runtime and package manager
+- [TypeScript](https://www.typescriptlang.org/) - Type safety and developer experience
+- [Expo Router](https://docs.expo.dev/router/introduction/) - File-based routing for Expo apps
+- [CORS Proxy](https://corsproxy.io/) - Handle cross-origin requests to the SWUDB API
 This is a React Native mobile app for Sports Card Investor, built with Expo and Bun.
 
 ## Features
@@ -104,10 +135,18 @@ bun run start
 - `/constants` - App constants and configuration
 - `/hooks` - Custom React hooks
 
-## Known Issues
+## API Integration
 
-- The app requires a local proxy server running on port 8010 to handle CORS for API requests
-- You can start the proxy using the local-cors-proxy package: `npx local-cors-proxy --port 8010 --proxyUrl https://api.sportsinvestor.com`
+The application integrates with the Star Wars Unlimited Database (SWUDB) API to fetch card information:
+
+- **Base URL**: https://swudb.com/api
+- **CORS Handling**: The app uses a CORS proxy (corsproxy.io) to handle cross-origin requests
+- **Fallback Data**: Mock card data is generated if the API is unavailable
+
+### Available Endpoints
+
+- **Catalog**: Fetch available card costs (0-15)
+- **Card Search**: Search cards by cost
 
 ## License
 

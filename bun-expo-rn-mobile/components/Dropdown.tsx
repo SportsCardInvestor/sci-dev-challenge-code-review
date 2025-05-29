@@ -52,14 +52,14 @@ export default function Dropdown({ onSelect }: DropdownProps) {
 
   return (
       <View style={styles.container} testID="dropdown-container">
-        <Text style={styles.label}>Filter by HP:</Text>
+        <Text style={styles.label}>Filter by Cost:</Text>
         <TouchableOpacity
             style={styles.dropdownButton}
             onPress={() => setModalVisible(true)}
-            testID="hp-dropdown"
+            testID="cost-dropdown"
         >
           <Text style={styles.dropdownButtonText}>
-            {selectedValue || "Select HP"}
+            {selectedValue || "Select Cost"}
           </Text>
         </TouchableOpacity>
 
