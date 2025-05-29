@@ -62,15 +62,11 @@ Go through the code and **comment on or mark every issue you can find**. Look fo
 
 ### Example Comment Format:
 ```typescript
-//CRITICAL SECURITY: SQL Injection vulnerability - user input directly interpolated
+// CRITICAL SECURITY: SQL Injection vulnerability - user input directly interpolated
 // TYPESCRIPT: Unnecessary type assertion - TypeScript can infer this type
 // STYLE: violates naming convention - should be camelCase
-//  ARCHITECTURE: Function has too many responsibilities
+// ARCHITECTURE: Function has too many responsibilities
 ```
-
-## 🏆 **Scoring**
-
-
 
 
 ## 🎨 **Eye Bleach Section**
