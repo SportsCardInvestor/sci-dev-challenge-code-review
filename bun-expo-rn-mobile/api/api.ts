@@ -1,10 +1,6 @@
-// API module for fetching card data from SWU-DB
-const BASE_URL = "https://api.swu-db.com";
+// API module using direct CORS proxy for live SWUDB data
+const SWUDB_BASE = "https://swudb.com/api";
 const CORS_PROXY = "https://api.allorigins.win/get?url=";
-
-// Check if we're running in a browser environment that might need CORS proxy
-const needsCorsProxy = typeof window !== 'undefined' &&
-    window.location?.hostname === 'localhost';
 
 // Error class for API-specific errors
 export class APIError extends Error {
@@ -17,7 +13,7 @@ export class APIError extends Error {
   }
 }
 
-// API response interface - SWU-DB returns arrays directly
+// API response interface
 export interface APIResponse<T> {
   data: T;
   success?: boolean;
@@ -26,10 +22,10 @@ export interface APIResponse<T> {
   message?: string;
 }
 
-// Card response interface based on SWU-DB API
+// Card response interface
 export interface CardResponse {
   Set: string;
-  SetName: string;
+  SetName?: string;
   Number: string;
   Name: string;
   Subtitle?: string;
@@ -52,103 +48,58 @@ export interface CardResponse {
   [key: string]: string | string[] | boolean | undefined;
 }
 
-// Helper function to make requests with optional CORS proxy
-const fetchWithCorsHandling = async (url: string): Promise<Response> => {
-  try {
-    // First try direct request
-    const response = await fetch(url);
-    if (response.ok) {
-      return response;
-    }
-    throw new Error(`Direct request failed: ${response.status}`);
-  } catch (error) {
-    if (needsCorsProxy) {
-      console.log('Direct request failed, trying with CORS proxy...');
-      // Try with CORS proxy
-      const proxyUrl = `${CORS_PROXY}${encodeURIComponent(url)}`;
-      const proxyResponse = await fetch(proxyUrl);
+// Always use CORS proxy for web requests
+const fetchViaProxy = async (url: string): Promise<any> => {
+  const proxyUrl = `${CORS_PROXY}${encodeURIComponent(url)}`;
+  console.log('Fetching via CORS proxy:', proxyUrl);
 
-      if (!proxyResponse.ok) {
-        throw new Error(`Proxy request failed: ${proxyResponse.status}`);
-      }
+  const response = await fetch(proxyUrl);
 
-      const proxyData = await proxyResponse.json();
-
-      // allorigins.win wraps the response in a 'contents' field
-      return {
-        ok: true,
-        json: async () => JSON.parse(proxyData.contents),
-        text: async () => proxyData.contents,
-      } as Response;
-    }
-    throw error;
+  if (!response.ok) {
+    throw new Error(`Proxy request failed: ${response.status} ${response.statusText}`);
   }
+
+  const proxyData = await response.json();
+  console.log('Proxy response:', proxyData);
+
+  // Parse the contents from the proxy response
+  return JSON.parse(proxyData.contents);
 };
 
-// Fetch HP options for filtering
+// Generate cost catalog (0-15 should cover most cards)
 export const fetchCatalog = async (): Promise<APIResponse<string[]>> => {
-  try {
-    const url = `${BASE_URL}/catalog/hps`;
-    console.log('Fetching HP catalog from:', url);
+  console.log('Generating cost catalog...');
 
-    const response = await fetchWithCorsHandling(url);
-    const hpArray = await response.json();
+  // Generate cost options 0-15
+  const costOptions = Array.from({ length: 16 }, (_, i) => i.toString());
 
-    console.log('Raw HP response:', hpArray);
+  console.log('Generated cost options:', costOptions);
 
-    // Handle different response formats
-    let processedHPs: string[];
-
-    if (Array.isArray(hpArray)) {
-      processedHPs = hpArray;
-    } else if (hpArray && Array.isArray(hpArray.data)) {
-      processedHPs = hpArray.data;
-    } else if (hpArray && typeof hpArray === 'object') {
-      // If it's an object, try to extract array values
-      processedHPs = Object.values(hpArray).filter(val =>
-          typeof val === 'string' || typeof val === 'number'
-      ).map(String);
-    } else {
-      throw new Error('Unexpected response format');
-    }
-
-    console.log('Processed HPs:', processedHPs);
-
-    return {
-      data: processedHPs,
-      success: true
-    };
-  } catch (error) {
-    console.error('Failed to fetch HP catalog:', error);
-
-    // Provide fallback HP options based on common Star Wars Unlimited HP values
-    const fallbackHPs = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
-
-    console.log('Using fallback HPs:', fallbackHPs);
-
-    return {
-      data: fallbackHPs,
-      success: true,
-      error: `Using fallback data: ${error instanceof Error ? error.message : 'Unknown error'}`
-    };
-  }
+  return {
+    data: costOptions,
+    success: true
+  };
 };
 
-// Search cards by HP using the correct query format
+// Search cards by cost using live SWUDB data
 export const searchCards = async (
-    hp: string,
+    cost: string,
 ): Promise<APIResponse<CardResponse[]>> => {
   try {
-    const url = `${BASE_URL}/cards/search?q=h:${hp}&format=json`;
-    console.log('Searching cards with HP:', hp, 'URL:', url);
+    console.log('Searching for cards with cost:', cost);
 
-    const response = await fetchWithCorsHandling(url);
-    const cardData = await response.json();
+    // Build the SWUDB API URL
+    const swudbUrl = `${SWUDB_BASE}/search/cost=${cost}?grouping=cards&sortorder=setno&sortdir=asc`;
+    console.log('SWUDB URL:', swudbUrl);
 
-    console.log('Raw card response:', cardData);
+    // Fetch via CORS proxy
+    const cardData = await fetchViaProxy(swudbUrl);
 
-    // Handle different response formats
-    let processedCards: CardResponse[];
+    console.log('Raw SWUDB response:', cardData);
+    console.log('Response type:', typeof cardData);
+
+    // Handle the SWUDB response format
+    let processedCards: CardResponse[] = [];
 
     if (Array.isArray(cardData)) {
       processedCards = cardData;
@@ -156,55 +107,33 @@ export const searchCards = async (
       processedCards = cardData.data;
     } else if (cardData && Array.isArray(cardData.results)) {
       processedCards = cardData.results;
-    } else {
-      // If no valid array found, return empty array
-      console.warn('No valid card array found in response');
-      processedCards = [];
+    } else if (cardData && Array.isArray(cardData.cards)) {
+      processedCards = cardData.cards;
+    } else if (cardData && typeof cardData === 'object') {
+      // Try to find any array in the response
+      for (const [key, value] of Object.entries(cardData)) {
+        if (Array.isArray(value) && value.length > 0) {
+          console.log(`Found cards array in key: ${key}`);
+          processedCards = value as CardResponse[];
+          break;
+        }
+      }
     }
 
     console.log('Processed cards:', processedCards.length, 'cards found');
+    console.log('Sample card:', processedCards[0]);
 
     return {
       data: processedCards,
       success: true
     };
+
   } catch (error) {
-    console.error(`Failed to search cards with HP ${hp}:`, error);
+    console.error(`Failed to search cards with cost ${cost}:`, error);
 
-    // Provide mock cards for development
-    const mockCards: CardResponse[] = [
-      {
-        Set: "SOR",
-        SetName: "Spark of Rebellion",
-        Number: "001",
-        Name: `Mock Card HP ${hp}`,
-        Type: "Unit",
-        Cost: "3",
-        Power: "2",
-        HP: hp,
-        FrontArt: `https://placehold.co/120x170/4f46e5/ffffff?text=HP+${hp}+Card`,
-        Rarity: "Common"
-      },
-      {
-        Set: "SOR",
-        SetName: "Spark of Rebellion",
-        Number: "002",
-        Name: `Another Mock Card HP ${hp}`,
-        Type: "Event",
-        Cost: "1",
-        Power: "0",
-        HP: hp,
-        FrontArt: `https://placehold.co/120x170/dc2626/ffffff?text=Event+HP+${hp}`,
-        Rarity: "Uncommon"
-      }
-    ];
-
-    console.log('Using mock cards:', mockCards.length);
-
-    return {
-      data: mockCards,
-      success: true,
-      error: `Using mock data: ${error instanceof Error ? error.message : 'Unknown error'}`
-    };
+    throw new APIError(
+        `Failed to fetch cards with cost ${cost}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error
+    );
   }
 };
