@@ -25,7 +25,7 @@ The code you're about to review contains:
 Go through the code and **comment on or mark every issue you can find**. Look for problems in these categories:
 
 ### 🔧 **TypeScript & Code Quality Issues**
-- Type assertion abuse and anti-patterns
+- Type anti-patterns
 - Missing or incorrect type definitions
 - Unused imports and variables
 - Poor naming conventions
@@ -98,7 +98,7 @@ Remember, this code is intentionally terrible. In the real world, if you encount
 2. **Document everything** you find
 3. **Prioritize security issues** first
 4. **Suggest refactoring** rather than just criticizing
-5. **Be kind** to your fellow developers (we've all written bad code)
+5. **Be kind** to your fellow developers (we've all written bad code. Well some of us have.)
 
 Good luck, brave code reviewer! May the TypeScript gods have mercy on your soul. 🙏
 
