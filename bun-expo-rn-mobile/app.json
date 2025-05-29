@@ -1,13 +1,21 @@
 {
   "expo": {
-    "name": "rn-mobile",
-    "slug": "rn-mobile",
+    "name": "Sports Card Investor",
+    "slug": "sports-card-investor",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "rnmobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
