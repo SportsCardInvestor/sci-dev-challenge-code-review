@@ -1,5 +1,6 @@
 "use client";
 import React from 'react';
+import Image from 'next/image';
 
 
 
@@ -8,7 +9,7 @@ type CardProps = {
     set: string;
     cost: number;
     power: number;
-    hp: string;
+    hp: number;
     type: string;
     traits: string[];
     rarity: string;

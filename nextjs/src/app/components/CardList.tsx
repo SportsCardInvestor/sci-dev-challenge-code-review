@@ -2,6 +2,28 @@
 import React, { useState, useEffect } from 'react';
 import Card from './Card';
 
+type APICard = {
+    Set: string;
+    Number: string;
+    Name: string;
+    Type: string;
+    Aspects: string[];
+    Traits: string[];
+    Arenas: string[];
+    Cost: number;
+    Power: number;
+    HP: number;
+    FrontText: string;
+    DoubleSided: boolean;
+    Rarity: string;
+    Unique: boolean;
+    Artist: string;
+    VariantType: string;
+    MarketPrice: string;
+    FoilPrice: string;
+    FrontArt: string;
+};
+
 type CardData = {
     set: string;
     number: string;
@@ -22,8 +44,7 @@ type CardData = {
     marketprice: string;
     foilprice: string;
     frontArt: string;
-
-
+    id: string;
 };
 
 type CardListProps = {
@@ -56,7 +77,7 @@ export default function CardList({ hp }: CardListProps) {
                 console.log("|-o-| CL: data", data);
 
                 const formattedCards = Array.isArray(data.data)
-                    ? data.data.map((card: any) => ({
+                    ? data.data.map((card: APICard) => ({
                         set: card.Set,
                         number: card.Number,
                         name: card.Name,
@@ -77,7 +98,7 @@ export default function CardList({ hp }: CardListProps) {
                         foilprice: card.FoilPrice,
                         frontArt: card.FrontArt,
                         id: `${card.Set}-${card.Number}` // Creating a unique ID using set and number
-                    })).sort((a, b) => (a[sortKey] > b[sortKey] ? 1 : -1))
+                    })).sort((a: CardData, b: CardData) => (a[sortKey] > b[sortKey] ? 1 : -1))
                     : [];
 
                 setCards(formattedCards);
@@ -97,7 +118,7 @@ export default function CardList({ hp }: CardListProps) {
 
     function sortCards(key: keyof CardData) {
         setSortKey(key);
-        setCards([...cards].sort((a, b) => (a[key] > b[key] ? 1 : -1)));
+        setCards([...cards].sort((a: CardData, b: CardData) => (a[key] > b[key] ? 1 : -1)));
     }
     console.log("|-o-| CL: cards", cards);
 
