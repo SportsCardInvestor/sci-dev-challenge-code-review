@@ -88,6 +88,11 @@ You can complete one or both, depending on the role or what you’ve been asked 
 
 ---
 
+## Communication is the biggest part of the challenge.
+
+- Please let me know if you have any questions, concerns, roadblocks, or brags.
+
+
 ## Show Me What You Got
 
 Push your code and reviews, share your repo or PR link, and let’s see your engineering skills in action!
