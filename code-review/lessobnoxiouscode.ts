@@ -1,3 +1,9 @@
+/*
+Removed unused imports.
+Issue: Style
+Suggested Fix: Remove unused imports.
+Severity: Low
+*/
 import {
     getIntegrator,
     MarketIntegrator,
@@ -29,9 +35,21 @@ import { PREFIXES } from './shared/labels';
 import { buildRetry } from './shared/retries';
 
 const VERSION_NUM = 17;
+/*
+Not being utilized.
+Issue: Style
+Suggested Fix: Remove or utilized.
+Severity: Low
+*/
 const MAX_RETRIES = 3;
 const BATCH_SIZE = 50;
 
+/*
+Not being utilized.
+Issue: Style
+Suggested Fix: Remove or utilized.
+Severity: Low
+*/
 let processingCounter = 0;
 
 interface BatchParams {
@@ -56,7 +74,12 @@ async function retrieveBatch(params: BatchParams): Promise<ItemEntry[]> {
 export const batchLoader: workflow.StepFn<'batchLoader', typeof taskArgs> = async (args) => {
     let entryList: ItemEntry[] = [];
     let processError: Error | null = null;
-
+    /*
+    Incorrectly setup for dynamic import.
+    Issue: TypeScript
+    Suggested Fix: Either move this to the top of the code or import as dynamic import.
+    Severity: Medium
+    */   
     import { Logger } from '@acme/log';
 
     try {
@@ -81,6 +104,12 @@ export const batchLoader: workflow.StepFn<'batchLoader', typeof taskArgs> = asyn
         }
 
     } catch (error) {
+        /*
+        We don't know for sure if error is of type Error.
+        Issue: Logic
+        Suggested Fix: Use instanceof to type check.
+        Severity: Medium
+        */
         processError = error as Error;
         args.trace.error('Failed to retrieve batch', { error: processError.message });
     }
@@ -96,6 +125,13 @@ export const batchLoader: workflow.StepFn<'batchLoader', typeof taskArgs> = asyn
         return;
     }
 
+    /*
+    Possible infinite loop chance when only validating for entryList.length.
+    Issue: Logic
+    Suggested Fix: Check if data is being returned in any way that is non-usable, null/undefined/etc...
+    or have a page limit cap like with some pagination designs.
+    Severity: High
+    */
     // Continue to next page
     await args.nextStep('batchLoader', {
         ...args.input,
@@ -103,6 +139,12 @@ export const batchLoader: workflow.StepFn<'batchLoader', typeof taskArgs> = asyn
     });
 };
 
+/*
+Function used where const function could be utilized.
+Issue: Style
+Suggested Fix: Use const function with expression.
+Severity: Low
+*/
 async function processEntries(
     entries: ItemEntry[],
     info: InfoBlock,
@@ -114,10 +156,21 @@ async function processEntries(
     logger: Logger
 ): Promise<void> {
     logger.debug(`Processing ${entries.length} entries`);
-
+    /*
+    We are running and storing each entry one by one.
+    Issue: Performance
+    Suggest Fix: We can asynchronously run all of them at the same time.
+    Severity: Medium
+    */
     for (const entry of entries) {
         try {
             if (info.closed) {
+                /* 
+                We are passing almost the same object to storeComplete and storeLive.
+                Issue: Style
+                Suggested Fix: Move to a single func that runs based on a ternary statement of info.closed.
+                Severity: Low
+                */
                 await storeComplete({
                     version: VERSION_NUM,
                     integrator,
@@ -141,8 +194,22 @@ async function processEntries(
         } catch (error) {
             logger.error('Failed to process entry', {
                 entryId: entry.id,
+                /*
+                We don't know for sure if error is of type Error.
+                Issue: Logic
+                Suggested Fix: Use instanceof to type check.
+                Severity: Medium
+                */
                 error: (error as Error).message
             });
+            /*
+            I don't love that we're possiblty getting an entry store failure, logging it, and just moving on.
+            I understand in some flows this can be fine, but it's hard to guage without diving deeper into the code and architecture.
+            Issue: Logic
+            Suggested Fix: Retry strategy, store all failed results and batch process them at a later period. 
+            This heavily depends on the architecture and also how critical the data is.
+            Severity: Medium
+            */
         }
     }
 }
