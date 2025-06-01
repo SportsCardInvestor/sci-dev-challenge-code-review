@@ -1,2 +1,5 @@
 /.idea/
 /_GARAGE_/
+node_modules/
+.DS_Store
+/.vscode/

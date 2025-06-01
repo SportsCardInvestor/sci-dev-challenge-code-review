@@ -1,0 +1,19 @@
+{
+  "name": "mtg-wizards-api",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.0.0",
+    "constructs": "^10.0.0",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.149",
+    "@types/node-fetch": "^2.6.12",
+    "aws-lambda": "^1.0.7",
+    "typescript": "^5.8.3"
+  }
+}
