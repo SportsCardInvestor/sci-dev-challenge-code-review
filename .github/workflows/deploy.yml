@@ -24,19 +24,21 @@ jobs:
       - name: Build project
         run: pnpm build
 
-      - name: Bootstrap CDK environment (optional)
+      - name: Bootstrap CDK environment
         env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
-          npx cdk bootstrap aws://$AWS_ACCESS_KEY_ID/$AWS_REGION
-          
+          npx cdk bootstrap aws://$AWS_ACCOUNT_ID/$AWS_REGION
+
       - name: CDK Synth
         run: npx cdk synth
 
       - name: Deploy CDK stack
         env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
