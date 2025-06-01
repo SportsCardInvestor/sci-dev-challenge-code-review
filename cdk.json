@@ -1,0 +1,6 @@
+{
+  "app": "npx ts-node bin/mtg-wizards-api.ts",
+  "context": {
+    "@aws-cdk/core:newStyleStackSynthesis": true
+  }
+}
