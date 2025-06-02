@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import * as cdk from 'aws-cdk-lib';
-import { MtgWizardsApiStack } from '../lib/mtg-wizards-api-stack';
+import * as cdk from 'aws-cdk-lib'; 
+import { MtgWizardsApiStack } from '../lib/mtg-wizards-api-stack'
 
 const app = new cdk.App();
 new MtgWizardsApiStack(app, 'MtgWizardsApiStack', {
